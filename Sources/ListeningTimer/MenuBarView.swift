@@ -44,7 +44,7 @@ struct MenuBarPopover: View {
                     Button {
                         NSApp.terminate(nil)
                     } label: {
-                        Label("退出聆听计时", systemImage: "power")
+                        Label("退出听鉴", systemImage: "power")
                     }
                     .buttonStyle(.plain)
                     .font(.system(size: 10, weight: .medium))
@@ -66,7 +66,7 @@ struct MenuBarPopover: View {
         HStack(spacing: 11) {
             AppMark(size: 34)
             VStack(alignment: .leading, spacing: 2) {
-                Text("聆听计时")
+                Text("听鉴")
                     .font(.system(size: 15, weight: .semibold, design: .rounded))
                 Text("有线与蓝牙耳机聆听统计")
                     .font(.system(size: 11))

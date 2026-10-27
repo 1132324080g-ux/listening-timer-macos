@@ -172,7 +172,7 @@ struct OnboardingView: View {
                             .fixedSize(horizontal: false, vertical: true)
 
                         Text(
-                            "当你用蓝牙或有线耳机播放选定音频时，聆听计时会在菜单栏里悄悄开始；暂停或断开耳机后自动结束。"
+                            "当你用蓝牙或有线耳机播放选定音频时，听鉴会在菜单栏里悄悄开始；暂停或断开耳机后自动结束。"
                         )
                         .font(.system(size: 12))
                         .foregroundStyle(
@@ -860,7 +860,7 @@ struct OnboardingView: View {
 
     private var headerTitle: String {
         switch state.step {
-        case 0: "欢迎来到聆听计时"
+        case 0: "欢迎来到听鉴"
         case 1: "选择你的音频来源"
         default: "确认并开始"
         }

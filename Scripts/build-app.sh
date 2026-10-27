@@ -4,8 +4,8 @@ set -euo pipefail
 readonly project_root="$(cd "$(dirname "$0")/.." && pwd)"
 readonly dist_dir="${DIST_DIR:-$project_root/dist}"
 readonly scratch_dir="$project_root/.build-universal"
-readonly app_path="$dist_dir/聆听计时.app"
-readonly dmg_path="$dist_dir/聆听计时-1.2.0-universal.dmg"
+readonly app_path="$dist_dir/听鉴.app"
+readonly dmg_path="$dist_dir/ListeningTimer.dmg"
 
 export CLANG_MODULE_CACHE_PATH="$scratch_dir/clang-module-cache"
 export SWIFT_MODULE_CACHE_PATH="$scratch_dir/swift-module-cache"
@@ -21,7 +21,7 @@ swift run \
     -c debug \
     CoreSelfTests
 
-echo "Building Universal 2 release…"
+echo "Building Universal release…"
 swift build \
     --disable-sandbox \
     --scratch-path "$scratch_dir" \
@@ -76,12 +76,12 @@ echo "Creating disk image…"
 readonly staging="$scratch_dir/dmg-staging"
 rm -rf "$staging"
 mkdir -p "$staging"
-cp -R "$app_path" "$staging/聆听计时.app"
+cp -R "$app_path" "$staging/听鉴.app"
 ln -s /Applications "$staging/Applications"
 if [[ "${SKIP_DMG:-0}" != "1" ]]; then
     rm -f "$dmg_path"
     diskutil image create from \
-        --volumeName "聆听计时" \
+        --volumeName "听鉴" \
         --format UDZO \
         "$staging" \
         "$dmg_path"

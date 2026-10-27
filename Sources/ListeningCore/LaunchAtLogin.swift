@@ -31,7 +31,7 @@ public enum LoginItemState: Equatable, Sendable {
         case .requiresApproval:
             "请在“系统设置 > 通用 > 登录项与扩展”中允许本应用。"
         case .notFound:
-            "请先将“聆听计时”放入“应用程序”文件夹，再重新开启。"
+            "请先将“听鉴”放入“应用程序”文件夹，再重新开启。"
         case .unknown:
             "暂时无法读取登录项状态，可前往系统设置检查。"
         }
@@ -44,7 +44,7 @@ public enum LaunchAtLoginError: LocalizedError, Sendable {
     public var errorDescription: String? {
         switch self {
         case .mustBeInApplications:
-            "请先将“聆听计时”拖入“应用程序”文件夹，再开启登录时启动。"
+            "请先将“听鉴”拖入“应用程序”文件夹，再开启登录时启动。"
         }
     }
 }

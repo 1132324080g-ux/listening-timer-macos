@@ -93,7 +93,7 @@ private struct DashboardShell: View {
             HStack(spacing: 14) {
                 HStack(spacing: 9) {
                     AppMark(size: 28)
-                    Text("聆听计时")
+                    Text("听鉴")
                         .font(
                             .system(
                                 size: 14,
@@ -174,7 +174,7 @@ private struct DashboardShell: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 10) {
                 AppMark(size: 32)
-                Text("聆听计时")
+                Text("听鉴")
                     .font(
                         .system(
                             size: 15,

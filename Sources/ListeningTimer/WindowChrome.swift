@@ -57,7 +57,7 @@ struct WindowChromeBar: View {
 
             HStack(spacing: 7) {
                 AppMark(size: 18)
-                Text("聆听计时")
+                Text("听鉴")
                     .font(
                         .system(
                             size: 11,

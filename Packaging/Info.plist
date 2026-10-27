@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>zh_CN</string>
 	<key>CFBundleDisplayName</key>
-	<string>聆听计时</string>
+	<string>听鉴</string>
 	<key>CFBundleExecutable</key>
 	<string>ListeningTimer</string>
 	<key>CFBundleIconFile</key>
@@ -19,17 +19,17 @@
 		<string>zh_CN</string>
 	</array>
 	<key>CFBundleName</key>
-	<string>聆听计时</string>
+	<string>听鉴</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.2.0</string>
+	<string>1.2.1</string>
 	<key>CFBundleSupportedPlatforms</key>
 	<array>
 		<string>MacOSX</string>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>3</string>
+	<string>4</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
 	<key>LSMinimumSystemVersion</key>
@@ -39,7 +39,7 @@
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSAudioCaptureUsageDescription</key>
-	<string>用于实时判断哪些应用正在播放音频，并提供更准确的聆听计时；不会录制、保存或上传音频内容。</string>
+	<string>用于实时判断哪些应用正在播放音频，并提供更准确的聆听时长统计；不会录制、保存或上传音频内容。</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
 	<key>NSHumanReadableCopyright</key>

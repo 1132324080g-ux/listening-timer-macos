@@ -504,7 +504,7 @@ final class AppModel: ObservableObject {
         panel.allowedContentTypes = [.commaSeparatedText]
         panel.canCreateDirectories = true
         panel.nameFieldStringValue =
-            "聆听计时-\(Self.fileDateFormatter.string(from: Date())).csv"
+            "听鉴-\(Self.fileDateFormatter.string(from: Date())).csv"
         guard panel.runModal() == .OK, let url = panel.url else {
             return
         }

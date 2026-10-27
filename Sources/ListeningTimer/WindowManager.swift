@@ -96,7 +96,7 @@ final class WindowManager {
             backing: .buffered,
             defer: false
         )
-        window.title = "聆听计时"
+        window.title = "听鉴"
         window.isOpaque = false
         window.backgroundColor = .clear
         window.hasShadow = true

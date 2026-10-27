@@ -1,12 +1,12 @@
-# 聆听计时
+# 听鉴
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-“聆听计时”是一款 macOS 26+ 菜单栏应用。它只统计用户选中的音频应用通过蓝牙或有线耳机播放的时长，并保留本机统计历史。
+“听鉴”是一款 macOS 26+ 菜单栏应用。它只统计用户选中的音频应用通过蓝牙或有线耳机播放的时长，并保留本机统计历史。
 
 ## 下载
 
-从 [GitHub Releases](https://github.com/1132324080g-ux/listening-timer-macos/releases/latest) 下载最新的 Universal 2 DMG。
+从 [GitHub Releases](https://github.com/1132324080g-ux/listening-timer-macos/releases/latest) 下载最新的 DMG。
 
 ## 主要功能
 
@@ -37,15 +37,15 @@ chmod +x Scripts/build-app.sh
 构建脚本会先运行不依赖 XCTest 的核心自检，然后生成 Universal 2 应用和 DMG：
 
 ```text
-dist/聆听计时.app
-dist/聆听计时-1.2.0-universal.dmg
+dist/听鉴.app
+dist/ListeningTimer.dmg
 ```
 
 当前产物使用 ad-hoc 签名，没有 Developer ID 公证。首次打开时可能需要在 Finder 中右键应用并选择“打开”，或在“系统设置 > 隐私与安全性”中允许运行。
 
 ## 安装与开机启动
 
-1. 打开 DMG，将“聆听计时”拖入“应用程序”。
+1. 打开 DMG，将“听鉴”拖入“应用程序”。
 2. 第一次运行完成音频来源和设备设置。
 3. 在向导或设置中开启“登录时静默启动”。
 4. 如果 macOS 要求批准，前往“系统设置 > 通用 > 登录项与扩展”允许应用。

@@ -801,7 +801,7 @@ struct SettingsView: View {
                     .fixedSize(horizontal: false, vertical: true)
                 }
 
-                Text("聆听计时 \(appVersion)")
+                Text("听鉴 \(appVersion)")
                     .font(.system(size: 9))
                     .foregroundStyle(
                         AppTheme.secondaryText(colorScheme).opacity(0.8)
@@ -874,6 +874,6 @@ struct SettingsView: View {
     private var appVersion: String {
         Bundle.main.object(
             forInfoDictionaryKey: "CFBundleShortVersionString"
-        ) as? String ?? "1.2.0"
+        ) as? String ?? "1.2.1"
     }
 }

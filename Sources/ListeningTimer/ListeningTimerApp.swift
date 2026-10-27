@@ -126,8 +126,8 @@ private struct MenuBarLabel: View {
 
     private var menuBarAccessibilityLabel: String {
         if let active = model.activeSession {
-            return "聆听计时，正在聆听 \(DurationFormatter.clock(active.accumulatedDuration))，全部累计 \(DurationFormatter.compact(model.allTimeTotal))"
+            return "听鉴，正在聆听 \(DurationFormatter.clock(active.accumulatedDuration))，全部累计 \(DurationFormatter.compact(model.allTimeTotal))"
         }
-        return "聆听计时，\(model.decision.status.title)，全部累计 \(DurationFormatter.compact(model.allTimeTotal))"
+        return "听鉴，\(model.decision.status.title)，全部累计 \(DurationFormatter.compact(model.allTimeTotal))"
     }
 }
