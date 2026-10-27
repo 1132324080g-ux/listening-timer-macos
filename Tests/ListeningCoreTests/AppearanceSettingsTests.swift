@@ -11,6 +11,7 @@ import Testing
             settings.overviewLayout.heroTotals == .todayAndAllTime
         )
         #expect(settings.menuBarDurationMode == .currentAndAllTime)
+        #expect(settings.appIconStyle == .deepSpacePurple)
         #expect(
             settings.overviewLayout.visibleWidgets.count
                 == OverviewWidget.allCases.count
@@ -38,6 +39,7 @@ import Testing
         #expect(settings.hasCompletedOnboarding)
         #expect(settings.overviewLayout == .default)
         #expect(settings.menuBarDurationMode == .currentAndAllTime)
+        #expect(settings.appIconStyle == .deepSpacePurple)
     }
 
     @Test func menuBarModesFormatLiveValues() {
@@ -89,7 +91,8 @@ import Testing
         layout.normalize()
         let original = AppSettings(
             overviewLayout: layout,
-            menuBarDurationMode: .allTime
+            menuBarDurationMode: .allTime,
+            appIconStyle: .ink
         )
         let data = try JSONEncoder().encode(original)
         let decoded = try JSONDecoder().decode(

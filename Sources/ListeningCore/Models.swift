@@ -481,6 +481,33 @@ public enum MenuBarDurationMode: String, Codable, CaseIterable, Identifiable, Se
     }
 }
 
+public enum AppIconStyle: String, Codable, CaseIterable, Identifiable, Sendable {
+    case deepSpacePurple
+    case ink
+    case sand
+    case teal
+
+    public var id: String { rawValue }
+
+    public var title: String {
+        switch self {
+        case .deepSpacePurple: "深空紫"
+        case .ink: "墨色"
+        case .sand: "沙金"
+        case .teal: "青绿"
+        }
+    }
+
+    public var resourceName: String {
+        switch self {
+        case .deepSpacePurple: "DeepSpacePurple"
+        case .ink: "Ink"
+        case .sand: "Sand"
+        case .teal: "Teal"
+        }
+    }
+}
+
 public struct AppSettings: Codable, Equatable, Sendable {
     public var selectedPlayers: [PlayerIdentity]
     public var manuallyWiredDeviceUIDs: Set<String>
@@ -491,6 +518,7 @@ public struct AppSettings: Codable, Equatable, Sendable {
     public var launchAtLoginRequested: Bool
     public var overviewLayout: OverviewLayoutSettings
     public var menuBarDurationMode: MenuBarDurationMode
+    public var appIconStyle: AppIconStyle
     public var schemaVersion: Int
 
     public init(
@@ -503,7 +531,8 @@ public struct AppSettings: Codable, Equatable, Sendable {
         launchAtLoginRequested: Bool = false,
         overviewLayout: OverviewLayoutSettings = .default,
         menuBarDurationMode: MenuBarDurationMode = .currentAndAllTime,
-        schemaVersion: Int = 3
+        appIconStyle: AppIconStyle = .deepSpacePurple,
+        schemaVersion: Int = 4
     ) {
         self.selectedPlayers = selectedPlayers
         self.manuallyWiredDeviceUIDs = manuallyWiredDeviceUIDs
@@ -514,6 +543,7 @@ public struct AppSettings: Codable, Equatable, Sendable {
         self.launchAtLoginRequested = launchAtLoginRequested
         self.overviewLayout = overviewLayout
         self.menuBarDurationMode = menuBarDurationMode
+        self.appIconStyle = appIconStyle
         self.schemaVersion = schemaVersion
     }
 
@@ -529,6 +559,7 @@ public struct AppSettings: Codable, Equatable, Sendable {
         case launchAtLoginRequested
         case overviewLayout
         case menuBarDurationMode
+        case appIconStyle
         case schemaVersion
     }
 
@@ -581,6 +612,11 @@ public struct AppSettings: Codable, Equatable, Sendable {
                 MenuBarDurationMode.self,
                 forKey: .menuBarDurationMode
             ) ?? .currentAndAllTime
+        appIconStyle =
+            try container.decodeIfPresent(
+                AppIconStyle.self,
+                forKey: .appIconStyle
+            ) ?? .deepSpacePurple
         schemaVersion =
             try container.decodeIfPresent(
                 Int.self,

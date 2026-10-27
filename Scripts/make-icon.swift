@@ -1,12 +1,21 @@
 import AppKit
 import Foundation
+import SwiftUI
 
-guard CommandLine.arguments.count == 2 else {
-    fputs("Usage: make-icon.swift <output.iconset>\n", stderr)
+guard CommandLine.arguments.count == 3 else {
+    fputs(
+        "Usage: make-icon.swift <source.png> <output.iconset>\n",
+        stderr
+    )
     exit(64)
 }
 
-let output = URL(fileURLWithPath: CommandLine.arguments[1], isDirectory: true)
+let sourceURL = URL(fileURLWithPath: CommandLine.arguments[1])
+let output = URL(fileURLWithPath: CommandLine.arguments[2], isDirectory: true)
+guard let sourceImage = NSImage(contentsOf: sourceURL) else {
+    fputs("Could not read source icon: \(sourceURL.path)\n", stderr)
+    exit(1)
+}
 try FileManager.default.createDirectory(
     at: output,
     withIntermediateDirectories: true
@@ -53,106 +62,62 @@ for variant in variants {
     )
 
     let rect = NSRect(x: 0, y: 0, width: size, height: size)
-    let inset = CGFloat(size) * 0.055
-    let plate = rect.insetBy(dx: inset, dy: inset)
-    let radius = CGFloat(size) * 0.225
-    let path = NSBezierPath(
-        roundedRect: plate,
-        xRadius: radius,
-        yRadius: radius
-    )
-
     NSColor.clear.setFill()
     rect.fill()
 
-    path.addClip()
-    let background = NSGradient(
-        colorsAndLocations:
-            (
-                NSColor(
-                    calibratedRed: 0.08,
-                    green: 0.23,
-                    blue: 0.22,
-                    alpha: 1
-                ),
-                0.0
-            ),
-            (
-                NSColor(
-                    calibratedRed: 0.12,
-                    green: 0.55,
-                    blue: 0.49,
-                    alpha: 1
-                ),
-                0.52
-            ),
-            (
-                NSColor(
-                    calibratedRed: 0.43,
-                    green: 0.76,
-                    blue: 0.68,
-                    alpha: 1
-                ),
-                1.0
-            )
-    )!
-    background.draw(in: plate, angle: -52)
+    let artworkInset = CGFloat(size) * (100.0 / 1024.0)
+    let artworkRect = rect.insetBy(
+        dx: artworkInset,
+        dy: artworkInset
+    )
+    let cornerRadius = artworkRect.width * (185.4 / 824.0)
+    let artworkPath = NSBezierPath(
+        cgPath: Path(
+            roundedRect: artworkRect,
+            cornerRadius: cornerRadius,
+            style: .continuous
+        ).cgPath
+    )
 
-    NSColor(
-        calibratedRed: 0.94,
-        green: 0.58,
-        blue: 0.42,
-        alpha: 0.82
-    ).setFill()
-    NSBezierPath(
-        ovalIn: NSRect(
-            x: plate.maxX - CGFloat(size) * 0.38,
-            y: plate.minY + CGFloat(size) * 0.05,
-            width: CGFloat(size) * 0.42,
-            height: CGFloat(size) * 0.42
-        )
-    ).fill()
-
-    NSColor.white.withAlphaComponent(0.10).setFill()
-    NSBezierPath(
-        ovalIn: NSRect(
-            x: plate.minX - CGFloat(size) * 0.18,
-            y: plate.maxY - CGFloat(size) * 0.38,
-            width: CGFloat(size) * 0.68,
-            height: CGFloat(size) * 0.68
-        )
-    ).fill()
-
-    NSGraphicsContext.restoreGraphicsState()
+    let shadow = NSShadow()
+    shadow.shadowColor = NSColor.black.withAlphaComponent(0.24)
+    shadow.shadowBlurRadius = max(0.5, CGFloat(size) * 0.022)
+    shadow.shadowOffset = NSSize(
+        width: 0,
+        height: -max(0.25, CGFloat(size) * 0.006)
+    )
     NSGraphicsContext.saveGraphicsState()
-    NSGraphicsContext.current = NSGraphicsContext(
-        bitmapImageRep: bitmap
+    shadow.set()
+    NSColor.black.setFill()
+    artworkPath.fill()
+    NSGraphicsContext.restoreGraphicsState()
+
+    NSGraphicsContext.saveGraphicsState()
+    artworkPath.addClip()
+    sourceImage.draw(
+        in: artworkRect,
+        from: .zero,
+        operation: .sourceOver,
+        fraction: 1,
+        respectFlipped: false,
+        hints: [.interpolation: NSImageInterpolation.high]
     )
 
-    let symbolSize = CGFloat(size) * 0.46
-    let config = NSImage.SymbolConfiguration(
-        pointSize: symbolSize,
-        weight: .semibold
+    let rimInset = max(0.35, CGFloat(size) * 0.001)
+    let rimPath = NSBezierPath(
+        cgPath: Path(
+            roundedRect: artworkRect.insetBy(
+                dx: rimInset,
+                dy: rimInset
+            ),
+            cornerRadius: max(0, cornerRadius - rimInset),
+            style: .continuous
+        ).cgPath
     )
-    if let symbol = NSImage(
-        systemSymbolName: "headphones",
-        accessibilityDescription: nil
-    )?.withSymbolConfiguration(config) {
-        symbol.isTemplate = true
-        NSColor.white.set()
-        let symbolRect = NSRect(
-            x: (CGFloat(size) - symbol.size.width) / 2,
-            y: (CGFloat(size) - symbol.size.height) / 2,
-            width: symbol.size.width,
-            height: symbol.size.height
-        )
-        symbol.draw(
-            in: symbolRect,
-            from: .zero,
-            operation: .sourceOver,
-            fraction: 1
-        )
-    }
+    NSColor.white.withAlphaComponent(0.10).setStroke()
+    rimPath.lineWidth = max(0.7, CGFloat(size) * 0.0015)
+    rimPath.stroke()
+    NSGraphicsContext.restoreGraphicsState()
 
     NSGraphicsContext.restoreGraphicsState()
 

@@ -64,7 +64,10 @@ struct MenuBarPopover: View {
 
     private var header: some View {
         HStack(spacing: 11) {
-            AppMark(size: 34)
+            AppMark(
+                size: 34,
+                style: model.settings.appIconStyle
+            )
             VStack(alignment: .leading, spacing: 2) {
                 Text("听鉴")
                     .font(.system(size: 15, weight: .semibold, design: .rounded))

@@ -28,6 +28,7 @@ struct SettingsView: View {
                 playerSources
                 audioDevices
                 behavior
+                applicationIcon
                 dataAndPrivacy
             }
             .padding(.horizontal, 28)
@@ -131,6 +132,98 @@ struct SettingsView: View {
                 )
             }
         }
+    }
+
+    private var applicationIcon: some View {
+        GlassPanel(padding: 20) {
+            applicationIconPicker
+        }
+    }
+
+    private var applicationIconPicker: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .bottom) {
+                SectionLabel(
+                    title: "应用图标",
+                    detail: "切换后立即应用于 Dock、应用切换器和界面标记"
+                )
+                Spacer()
+                Text("深空紫为默认图标")
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundStyle(
+                        AppTheme.secondaryText(colorScheme)
+                    )
+            }
+
+            LazyVGrid(
+                columns: Array(
+                    repeating: GridItem(.flexible(), spacing: 12),
+                    count: AppIconStyle.allCases.count
+                ),
+                spacing: 12
+            ) {
+                ForEach(AppIconStyle.allCases) { style in
+                    applicationIconCard(style)
+                }
+            }
+        }
+    }
+
+    private func applicationIconCard(_ style: AppIconStyle) -> some View {
+        let isSelected = model.settings.appIconStyle == style
+        return Button {
+            model.setAppIconStyle(style)
+        } label: {
+            VStack(spacing: 8) {
+                if let icon = ApplicationIconCatalog.image(for: style) {
+                    Image(nsImage: icon)
+                        .resizable()
+                        .interpolation(.high)
+                        .scaledToFit()
+                        .frame(width: 58, height: 58)
+                } else {
+                    Image(systemName: "app.dashed")
+                        .font(.system(size: 30))
+                        .foregroundStyle(AppTheme.secondaryText(colorScheme))
+                        .frame(width: 58, height: 58)
+                }
+
+                HStack(spacing: 5) {
+                    Text(style.title)
+                        .font(.system(size: 10, weight: .medium))
+                    if isSelected {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(AppTheme.accent)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(
+                isSelected
+                    ? AppTheme.accent.opacity(0.10)
+                    : Color.primary.opacity(
+                        colorScheme == .dark ? 0.025 : 0.018
+                    ),
+                in: RoundedRectangle(cornerRadius: 15, style: .continuous)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: 15, style: .continuous)
+                    .strokeBorder(
+                        isSelected
+                            ? AppTheme.accent.opacity(0.55)
+                            : AppTheme.hairline(colorScheme),
+                        lineWidth: isSelected ? 1 : 0.7
+                    )
+            }
+            .contentShape(
+                RoundedRectangle(cornerRadius: 15, style: .continuous)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(style.title)应用图标")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     private var layoutPicker: some View {
@@ -876,6 +969,6 @@ struct SettingsView: View {
     private var appVersion: String {
         Bundle.main.object(
             forInfoDictionaryKey: "CFBundleShortVersionString"
-        ) as? String ?? "1.2.2"
+        ) as? String ?? "1.3.0"
     }
 }

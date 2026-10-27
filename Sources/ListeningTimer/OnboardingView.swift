@@ -616,7 +616,10 @@ struct OnboardingView: View {
                 ) {
                     VStack(alignment: .leading, spacing: 15) {
                         HStack {
-                            AppMark(size: 42)
+                            AppMark(
+                                size: 42,
+                                style: model.settings.appIconStyle
+                            )
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("已经可以开始")
                                     .font(

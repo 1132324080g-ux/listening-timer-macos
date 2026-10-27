@@ -56,7 +56,10 @@ struct WindowChromeBar: View {
             }
 
             HStack(spacing: 7) {
-                AppMark(size: 18)
+                AppMark(
+                    size: 18,
+                    style: model.settings.appIconStyle
+                )
                 Text("听鉴")
                     .font(
                         .system(

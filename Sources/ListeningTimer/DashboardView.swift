@@ -92,7 +92,10 @@ private struct DashboardShell: View {
         VStack(spacing: 0) {
             HStack(spacing: 14) {
                 HStack(spacing: 9) {
-                    AppMark(size: 28)
+                    AppMark(
+                        size: 28,
+                        style: model.settings.appIconStyle
+                    )
                     Text("听鉴")
                         .font(
                             .system(
@@ -173,7 +176,10 @@ private struct DashboardShell: View {
     private var sidebar: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 10) {
-                AppMark(size: 32)
+                AppMark(
+                    size: 32,
+                    style: model.settings.appIconStyle
+                )
                 Text("听鉴")
                     .font(
                         .system(

@@ -54,12 +54,22 @@ mkdir -p "$app_path/Contents/Resources"
 cp "$binary" "$app_path/Contents/MacOS/ListeningTimer"
 cp "$project_root/Packaging/Info.plist" "$app_path/Contents/Info.plist"
 
-readonly iconset="$scratch_dir/AppIcon.iconset"
-rm -rf "$iconset"
-swift "$project_root/Scripts/make-icon.swift" "$iconset"
-swift \
-    "$project_root/Scripts/make-icns.swift" \
-    "$iconset" \
+readonly icon_source_dir="$project_root/Packaging/Icons"
+readonly icon_styles=(DeepSpacePurple Ink Sand Teal)
+for icon_style in "${icon_styles[@]}"; do
+    icon_iconset="$scratch_dir/AppIcon-$icon_style.iconset"
+    rm -rf "$icon_iconset"
+    swift \
+        "$project_root/Scripts/make-icon.swift" \
+        "$icon_source_dir/$icon_style-1024.png" \
+        "$icon_iconset"
+    swift \
+        "$project_root/Scripts/make-icns.swift" \
+        "$icon_iconset" \
+        "$app_path/Contents/Resources/AppIcon-$icon_style.icns"
+done
+cp \
+    "$app_path/Contents/Resources/AppIcon-DeepSpacePurple.icns" \
     "$app_path/Contents/Resources/AppIcon.icns"
 
 chmod +x "$app_path/Contents/MacOS/ListeningTimer"

@@ -407,7 +407,8 @@ struct CoreSelfTests {
         check(
             legacySettings?.overviewLayout == .default
                 && legacySettings?.menuBarDurationMode
-                    == .currentAndAllTime,
+                    == .currentAndAllTime
+                && legacySettings?.appIconStyle == .deepSpacePurple,
             "Legacy settings should receive new appearance defaults"
         )
 

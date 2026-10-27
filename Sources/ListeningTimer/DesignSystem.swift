@@ -96,8 +96,29 @@ struct GlassPanel<Content: View>: View {
 
 struct AppMark: View {
     var size: CGFloat = 38
+    var style: AppIconStyle = .deepSpacePurple
 
     var body: some View {
+        Group {
+            if let icon = ApplicationIconCatalog.image(for: style) {
+                Image(nsImage: icon)
+                    .resizable()
+                    .interpolation(.high)
+                    .scaledToFit()
+            } else {
+                fallbackMark
+            }
+        }
+        .frame(width: size, height: size)
+        .shadow(
+            color: AppTheme.accent.opacity(0.18),
+            radius: size * 0.22,
+            y: size * 0.10
+        )
+        .accessibilityHidden(true)
+    }
+
+    private var fallbackMark: some View {
         ZStack {
             RoundedRectangle(
                 cornerRadius: size * 0.30,
@@ -110,12 +131,6 @@ struct AppMark: View {
                     endPoint: .bottomTrailing
                 )
             )
-            .overlay(alignment: .bottomTrailing) {
-                Circle()
-                    .fill(AppTheme.warm.opacity(0.88))
-                    .frame(width: size * 0.26, height: size * 0.26)
-                    .padding(size * 0.10)
-            }
 
             Image(systemName: "headphones")
                 .font(
@@ -127,13 +142,6 @@ struct AppMark: View {
                 )
                 .foregroundStyle(.white)
         }
-        .frame(width: size, height: size)
-        .shadow(
-            color: AppTheme.accent.opacity(0.18),
-            radius: size * 0.22,
-            y: size * 0.10
-        )
-        .accessibilityHidden(true)
     }
 }
 

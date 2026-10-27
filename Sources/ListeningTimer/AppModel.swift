@@ -97,6 +97,7 @@ final class AppModel: ObservableObject {
         let checkpoint = await repository.loadCheckpoint()
         sessions = loadedSessions.value.sorted { $0.startedAt < $1.startedAt }
         settings = loadedSettings.value
+        ApplicationIconCatalog.apply(settings.appIconStyle)
         warnings.append(contentsOf: loadedSessions.warnings)
         warnings.append(contentsOf: loadedSettings.warnings)
         isTrackingPaused = !settings.trackingEnabled
@@ -348,6 +349,14 @@ final class AppModel: ObservableObject {
 
     func setMenuBarDurationMode(_ mode: MenuBarDurationMode) {
         updateSettings { $0.menuBarDurationMode = mode }
+    }
+
+    func setAppIconStyle(_ style: AppIconStyle) {
+        guard settings.appIconStyle != style else {
+            return
+        }
+        updateSettings { $0.appIconStyle = style }
+        ApplicationIconCatalog.apply(style)
     }
 
     func setOverviewWidget(
