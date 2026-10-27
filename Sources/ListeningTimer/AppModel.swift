@@ -47,6 +47,7 @@ final class AppModel: ObservableObject {
     @Published private(set) var isLoaded = false
     @Published private(set) var discoveredPlayers: [PlayerIdentity] = []
     @Published private(set) var playingAudioBundleIDs: Set<String> = []
+    @Published private(set) var installedSourceBundleIDs: Set<String> = []
     @Published private(set) var isTrackingPaused = false
     @Published var selectedSection: MainSection = .overview
     @Published var warnings: [String] = []
@@ -66,6 +67,7 @@ final class AppModel: ObservableObject {
     private var hasStarted = false
     private var isTerminating = false
     private var lastActiveSessionUIPublish: TimeInterval = 0
+    private var lastInstalledSourceRefresh: TimeInterval = 0
 
     init(
         repository: SessionRepository = JSONSessionRepository(),
@@ -111,6 +113,7 @@ final class AppModel: ObservableObject {
     }
 
     func refreshAudio() {
+        refreshInstalledSourceBundleIDs(force: true)
         let selectedSourceBundleIDs = selectedAudioSourceBundleIDs
         let result = audioProvider.readSnapshot()
         audioActivityMonitor.update(
@@ -129,12 +132,14 @@ final class AppModel: ObservableObject {
 
     private var selectedAudioSourceBundleIDs: Set<String> {
         Set(
-            settings.selectedPlayers.map {
-                AudioSourceResolver.canonicalBundleID(
-                    for: $0.bundleID,
-                    processName: $0.displayName
-                )
-            }
+            settings.selectedPlayers
+                .filter(isPlayerInstalled)
+                .map {
+                    AudioSourceResolver.canonicalBundleID(
+                        for: $0.bundleID,
+                        processName: $0.displayName
+                    )
+                }
         )
     }
 
@@ -203,7 +208,7 @@ final class AppModel: ObservableObject {
             byBundleID[sourceBundleID] = player
             playingBundleIDs.insert(sourceBundleID)
         }
-        for player in settings.selectedPlayers {
+        for player in installedSelectedPlayers {
             byBundleID[player.bundleID] = player
         }
         if playingAudioBundleIDs != playingBundleIDs {
@@ -221,6 +226,11 @@ final class AppModel: ObservableObject {
         }
         if discoveredPlayers != sortedPlayers {
             discoveredPlayers = sortedPlayers
+        }
+        if !playingBundleIDs.isSubset(
+            of: installedSourceBundleIDs
+        ) {
+            installedSourceBundleIDs.formUnion(playingBundleIDs)
         }
 
         if isLoaded {
@@ -265,6 +275,7 @@ final class AppModel: ObservableObject {
                 guard let self, !self.isTerminating else {
                     return
                 }
+                self.refreshInstalledSourceBundleIDs(force: false)
                 let work = await self.readAudioSnapshotInBackground(
                     selectedSourceBundleIDs:
                         self.selectedAudioSourceBundleIDs
@@ -301,6 +312,18 @@ final class AppModel: ObservableObject {
 
     func isPlayerSelected(_ player: PlayerIdentity) -> Bool {
         settings.selectedPlayers.contains { $0.bundleID == player.bundleID }
+    }
+
+    var installedSelectedPlayers: [PlayerIdentity] {
+        settings.selectedPlayers.filter(isPlayerInstalled)
+    }
+
+    func isPlayerInstalled(_ player: PlayerIdentity) -> Bool {
+        let canonicalBundleID = AudioSourceResolver.canonicalBundleID(
+            for: player.bundleID,
+            processName: player.displayName
+        )
+        return installedSourceBundleIDs.contains(canonicalBundleID)
     }
 
     func isAudioPlaying(_ player: PlayerIdentity) -> Bool {
@@ -662,10 +685,13 @@ final class AppModel: ObservableObject {
         }
         let wallDate = Date()
         let monotonic = ProcessInfo.processInfo.systemUptime
+        var effectiveSettings = settings
+        effectiveSettings.selectedPlayers =
+            settings.selectedPlayers.filter(isPlayerInstalled)
         let result = tracker.tick(
             input: TrackingInput(
                 snapshot: snapshot,
-                settings: settings,
+                settings: effectiveSettings,
                 processAudioActivity: processAudioActivity
             ),
             wallDate: wallDate,
@@ -683,6 +709,44 @@ final class AppModel: ObservableObject {
         } else if result.shouldCheckpoint,
                   let session = result.activeSession {
             persistCheckpoint(session)
+        }
+    }
+
+    private func refreshInstalledSourceBundleIDs(force: Bool) {
+        let now = ProcessInfo.processInfo.systemUptime
+        guard force || now - lastInstalledSourceRefresh >= 5 else {
+            return
+        }
+        lastInstalledSourceRefresh = now
+        let candidates = Set(
+            (
+                AudioSourceResolver.commonPlayers
+                    + discoveredPlayers
+                    + settings.selectedPlayers
+            ).map {
+                AudioSourceResolver.canonicalBundleID(
+                    for: $0.bundleID,
+                    processName: $0.displayName
+                )
+            }
+        )
+        let runningBundleIDs = Set(
+            NSWorkspace.shared.runningApplications.compactMap {
+                $0.bundleIdentifier.map {
+                    AudioSourceResolver.canonicalBundleID(for: $0)
+                }
+            }
+        )
+        let installed = Set(
+            candidates.filter { bundleID in
+                runningBundleIDs.contains(bundleID)
+                    || NSWorkspace.shared.urlForApplication(
+                        withBundleIdentifier: bundleID
+                    ) != nil
+            }
+        )
+        if installedSourceBundleIDs != installed {
+            installedSourceBundleIDs = installed
         }
     }
 

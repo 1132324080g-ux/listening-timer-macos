@@ -486,7 +486,7 @@ struct OnboardingView: View {
                         Text("暂时没看到正在使用的应用？")
                             .font(.system(size: 11, weight: .semibold))
                         Text(
-                            "先打开播放器再点“重新检测”。展开列表后可以选择任意音频应用，安装后无需再次设置。"
+                            "列表仅显示这台 Mac 上已安装的音频应用。先打开播放器再点“重新检测”；卸载后会自动隐藏，重新安装后会恢复之前的选择。"
                         )
                         .font(.system(size: 10))
                         .foregroundStyle(
@@ -498,7 +498,7 @@ struct OnboardingView: View {
                     Text(selectionSummary)
                         .font(.system(size: 10, weight: .medium))
                         .foregroundStyle(
-                            model.settings.selectedPlayers.isEmpty
+                            model.installedSelectedPlayers.isEmpty
                                 ? AppTheme.secondaryText(colorScheme)
                                 : AppTheme.accent
                         )
@@ -879,16 +879,16 @@ struct OnboardingView: View {
     }
 
     private var cannotAdvance: Bool {
-        state.step == 1 && model.settings.selectedPlayers.isEmpty
+        state.step == 1 && model.installedSelectedPlayers.isEmpty
     }
 
     private var selectionSummary: String {
-        let count = model.settings.selectedPlayers.count
+        let count = model.installedSelectedPlayers.count
         return count == 0 ? "尚未选择" : "已选择 \(count) 个"
     }
 
     private var selectedPlayersText: String {
-        let names = model.settings.selectedPlayers.map(\.displayName)
+        let names = model.installedSelectedPlayers.map(\.displayName)
         return names.isEmpty ? "尚未选择" : names.joined(separator: "、")
     }
 
@@ -910,24 +910,27 @@ struct OnboardingView: View {
             + model.settings.selectedPlayers {
             sources[player.bundleID] = player
         }
-        return sources.values.sorted {
-            let firstIsPlaying = model.playingAudioBundleIDs.contains(
-                $0.bundleID
-            )
-            let secondIsPlaying = model.playingAudioBundleIDs.contains(
-                $1.bundleID
-            )
-            if firstIsPlaying != secondIsPlaying {
-                return firstIsPlaying
+        return sources.values
+            .filter(model.isPlayerInstalled)
+            .sorted {
+                let firstIsPlaying = model.playingAudioBundleIDs.contains(
+                    $0.bundleID
+                )
+                let secondIsPlaying = model.playingAudioBundleIDs.contains(
+                    $1.bundleID
+                )
+                if firstIsPlaying != secondIsPlaying {
+                    return firstIsPlaying
+                }
+                let firstIsSelected = model.isPlayerSelected($0)
+                let secondIsSelected = model.isPlayerSelected($1)
+                if firstIsSelected != secondIsSelected {
+                    return firstIsSelected
+                }
+                return $0.displayName.localizedStandardCompare(
+                    $1.displayName
+                ) == .orderedAscending
             }
-            let firstIsSelected = model.isPlayerSelected($0)
-            let secondIsSelected = model.isPlayerSelected($1)
-            if firstIsSelected != secondIsSelected {
-                return firstIsSelected
-            }
-            return $0.displayName.localizedStandardCompare($1.displayName)
-                == .orderedAscending
-        }
     }
 }
 

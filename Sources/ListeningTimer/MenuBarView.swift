@@ -280,9 +280,9 @@ struct MenuBarPopover: View {
     }
 
     private var statusDetail: String {
-        if !model.settings.selectedPlayers.isEmpty,
+        if !model.installedSelectedPlayers.isEmpty,
            model.decision.status == .waitingForPlayback {
-            return model.settings.selectedPlayers.map(\.displayName)
+            return model.installedSelectedPlayers.map(\.displayName)
                 .joined(separator: "、")
         }
         if model.decision.status == .waitingForDevice {

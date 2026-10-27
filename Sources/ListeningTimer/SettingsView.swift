@@ -343,7 +343,7 @@ struct SettingsView: View {
                     ? sources
                     : Array(sources.prefix(sourcePreviewLimit))
                 if sources.isEmpty {
-                    Text("播放音频后点击刷新，即可从音频进程中添加应用。")
+                    Text("仅显示这台 Mac 上已安装的音频应用；启动播放器后会自动出现在这里。")
                         .font(.system(size: 11))
                         .foregroundStyle(
                             AppTheme.secondaryText(colorScheme)
@@ -839,25 +839,27 @@ struct SettingsView: View {
             + model.settings.selectedPlayers {
             byBundleID[player.bundleID] = player
         }
-        return byBundleID.values.sorted {
-            let firstIsPlaying = model.playingAudioBundleIDs.contains(
-                $0.bundleID
-            )
-            let secondIsPlaying = model.playingAudioBundleIDs.contains(
-                $1.bundleID
-            )
-            if firstIsPlaying != secondIsPlaying {
-                return firstIsPlaying
+        return byBundleID.values
+            .filter(model.isPlayerInstalled)
+            .sorted {
+                let firstIsPlaying = model.playingAudioBundleIDs.contains(
+                    $0.bundleID
+                )
+                let secondIsPlaying = model.playingAudioBundleIDs.contains(
+                    $1.bundleID
+                )
+                if firstIsPlaying != secondIsPlaying {
+                    return firstIsPlaying
+                }
+                let firstIsSelected = model.isPlayerSelected($0)
+                let secondIsSelected = model.isPlayerSelected($1)
+                if firstIsSelected != secondIsSelected {
+                    return firstIsSelected
+                }
+                return $0.displayName.localizedStandardCompare(
+                    $1.displayName
+                ) == .orderedAscending
             }
-            let firstIsSelected = model.isPlayerSelected($0)
-            let secondIsSelected = model.isPlayerSelected($1)
-            if firstIsSelected != secondIsSelected {
-                return firstIsSelected
-            }
-            return $0.displayName.localizedStandardCompare(
-                $1.displayName
-            ) == .orderedAscending
-        }
     }
 
     private func isDetected(_ player: PlayerIdentity) -> Bool {
@@ -874,6 +876,6 @@ struct SettingsView: View {
     private var appVersion: String {
         Bundle.main.object(
             forInfoDictionaryKey: "CFBundleShortVersionString"
-        ) as? String ?? "1.2.1"
+        ) as? String ?? "1.2.2"
     }
 }
