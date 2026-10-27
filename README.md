@@ -1,6 +1,12 @@
 # 聆听计时
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 “聆听计时”是一款 macOS 26+ 菜单栏应用。它只统计用户选中的音频应用通过蓝牙或有线耳机播放的时长，并保留本机统计历史。
+
+## 下载
+
+从 [GitHub Releases](https://github.com/1132324080g-ux/listening-timer-macos/releases/latest) 下载最新的 Universal 2 DMG。
 
 ## 主要功能
 
@@ -74,3 +80,7 @@ swift run --disable-sandbox --scratch-path .build CoreSelfTests
 - 3.5 mm 模拟耳机不向 macOS 提供品牌或型号。系统只能判断插孔是否连接，无法自动区分插在同一接口上的不同耳机。
 - 蓝牙耳机的左右耳通常作为同一副配对设备报告，因此独立累计以配对设备的 UID/名称为单位，而不是分左右耳统计。
 - 多个选定播放器同时播放时，总时长只计算一次，来源分布中的各播放器时长可以重叠。
+
+## 许可证
+
+本项目采用 [MIT License](LICENSE)。Copyright © 2026 LazyCanary。
